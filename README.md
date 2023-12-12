@@ -1,4 +1,4 @@
-As simple demo, endless sea on all sides.
+A simple demo, endless sea on all sides.
 
 ## Controls
 |Action|Keyboard|

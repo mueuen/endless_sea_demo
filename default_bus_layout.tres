@@ -1,0 +1,39 @@
+[gd_resource type="AudioBusLayout" load_steps=3 format=3 uid="uid://c6hbguc7v8kyf"]
+
+[sub_resource type="AudioEffectDelay" id="AudioEffectDelay_6mkft"]
+resource_name = "Delay"
+tap1_delay_ms = 280.0
+tap1_level_db = -3.0
+tap2_active = false
+feedback_active = true
+feedback_delay_ms = 280.0
+feedback_level_db = -11.0
+
+[sub_resource type="AudioEffectDelay" id="AudioEffectDelay_xaff4"]
+resource_name = "Delay"
+dry = 0.4
+tap1_delay_ms = 445.0
+tap1_level_db = -4.0
+tap1_pan = 0.0
+tap2_active = false
+feedback_active = true
+feedback_delay_ms = 200.0
+feedback_level_db = -5.0
+
+[resource]
+bus/1/name = &"Mid"
+bus/1/solo = false
+bus/1/mute = false
+bus/1/bypass_fx = false
+bus/1/volume_db = 0.0
+bus/1/send = &"Master"
+bus/1/effect/0/effect = SubResource("AudioEffectDelay_6mkft")
+bus/1/effect/0/enabled = true
+bus/2/name = &"Far"
+bus/2/solo = false
+bus/2/mute = false
+bus/2/bypass_fx = false
+bus/2/volume_db = 0.0
+bus/2/send = &"Master"
+bus/2/effect/0/effect = SubResource("AudioEffectDelay_xaff4")
+bus/2/effect/0/enabled = true

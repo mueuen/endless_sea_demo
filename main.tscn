@@ -1,0 +1,144 @@
+[gd_scene load_steps=17 format=3 uid="uid://7qgg64egq8ex"]
+
+[ext_resource type="Script" path="res://camymamy.gd" id="1_7i7dr"]
+[ext_resource type="Script" path="res://main.gd" id="1_nnngw"]
+[ext_resource type="Texture2D" uid="uid://d4eapj82frxdy" path="res://sea.png" id="1_rfdch"]
+[ext_resource type="Script" path="res://player.gd" id="2_o7asg"]
+[ext_resource type="Script" path="res://rig.gd" id="3_sn4id"]
+[ext_resource type="Shader" path="res://water_wibble.gdshader" id="4_6ngma"]
+[ext_resource type="Script" path="res://ocean_plane.gd" id="5_s63y5"]
+[ext_resource type="AudioStream" uid="uid://k7ubxdpojclu" path="res://shoutout.wav" id="6_p8w44"]
+[ext_resource type="AudioStream" uid="uid://drxci3dm7c4ug" path="res://ecean.wav" id="7_5vx86"]
+[ext_resource type="AudioStream" uid="uid://brvfi58lwddn2" path="res://good_job.wav" id="7_p3bhj"]
+[ext_resource type="Script" path="res://ocean_sound.gd" id="8_kphsm"]
+[ext_resource type="PackedScene" uid="uid://c4qqin0hx7pop" path="res://boat.glb" id="9_p2wux"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_nlkp3"]
+size = Vector2(500, 500)
+subdivide_width = 64
+subdivide_depth = 64
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yo8ls"]
+render_priority = 0
+shader = ExtResource("4_6ngma")
+shader_parameter/amplitude = Vector2(0.5, 0.1)
+shader_parameter/frequency = Vector2(2.4, 0.075)
+shader_parameter/time_factor = Vector2(2, 3)
+shader_parameter/texturescale = Vector2(60, 60)
+shader_parameter/scroll = Vector2(0, 0)
+shader_parameter/texturemap = ExtResource("1_rfdch")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_e30dq"]
+size = Vector3(20, 10, 10)
+
+[sub_resource type="Environment" id="Environment_ig6wh"]
+background_mode = 1
+background_color = Color(0.631373, 0.839216, 1, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1.1, 1.1, 1.1, 1)
+fog_enabled = true
+fog_light_color = Color(0.631373, 0.839216, 1, 1)
+fog_density = 0.0005
+
+[node name="main" type="Node3D"]
+script = ExtResource("1_nnngw")
+
+[node name="rig" type="Node3D" parent="." node_paths=PackedStringArray("shoutout", "oceanPlane", "player", "lookTarget")]
+script = ExtResource("3_sn4id")
+shoutout = NodePath("../shoutout")
+oceanPlane = NodePath("ocean_plane")
+player = NodePath("../player")
+lookTarget = NodePath("../look_target")
+
+[node name="camymamy" type="Camera3D" parent="rig" node_paths=PackedStringArray("lookTarget")]
+current = true
+script = ExtResource("1_7i7dr")
+lookTarget = NodePath("../../look_target")
+
+[node name="ocean_plane" type="MeshInstance3D" parent="rig"]
+mesh = SubResource("PlaneMesh_nlkp3")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_yo8ls")
+script = ExtResource("5_s63y5")
+
+[node name="left_warp_sound" type="AudioStreamPlayer3D" parent="rig"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -500, 0, 0)
+attenuation_model = 3
+volume_db = -13.0
+bus = &"Mid"
+
+[node name="right_warp_sound" type="AudioStreamPlayer3D" parent="rig"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 500, 0, 0)
+attenuation_model = 3
+volume_db = -13.0
+bus = &"Mid"
+
+[node name="up_warp_sound" type="AudioStreamPlayer3D" parent="rig"]
+attenuation_model = 3
+volume_db = -15.0
+bus = &"Far"
+
+[node name="down_warp_sound" type="AudioStreamPlayer3D" parent="rig"]
+attenuation_model = 3
+volume_db = -9.0
+
+[node name="shoutout_sound" type="AudioStreamPlayer" parent="rig"]
+stream = ExtResource("6_p8w44")
+volume_db = -14.0
+
+[node name="good_job_sound" type="AudioStreamPlayer" parent="rig"]
+stream = ExtResource("7_p3bhj")
+volume_db = -11.0
+
+[node name="player" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+input_ray_pickable = false
+monitoring = false
+monitorable = false
+script = ExtResource("2_o7asg")
+
+[node name="boat" parent="player" instance=ExtResource("9_p2wux")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="coll_shape" type="CollisionShape3D" parent="player"]
+shape = SubResource("BoxShape3D_e30dq")
+
+[node name="light_setup" type="Node3D" parent="player"]
+
+[node name="main_light" type="OmniLight3D" parent="player/light_setup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.9165, 66.9385, -55.3217)
+light_energy = 1200.0
+omni_range = 100.0
+
+[node name="support_light" type="OmniLight3D" parent="player/light_setup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.4129, 8.00751, 54.7463)
+light_energy = 110.0
+omni_range = 100.0
+
+[node name="look_target" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_ig6wh")
+
+[node name="shoutout" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 55.6942, -40.1675)
+visible = false
+pixel_size = 1.0
+texture_filter = 1
+text = "Shoutouts to
+Simpleflips!"
+font_size = 16
+outline_size = 4
+
+[node name="ocean_sound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_5vx86")
+volume_db = -18.0
+pitch_scale = 0.94
+autoplay = true
+script = ExtResource("8_kphsm")
+
+[node name="screen_tint" type="ColorRect" parent="."]
+offset_right = 640.0
+offset_bottom = 480.0
+color = Color(0, 0, 0, 1)
